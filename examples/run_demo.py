@@ -1,3 +1,7 @@
+import os
+
+os.environ["RAG_VERBOSE"] = "1"
+
 from agentic_rag_demo import run_query
 
 if __name__ == "__main__":

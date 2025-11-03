@@ -8,19 +8,37 @@ from .llm_client import LLMClient
 from .tools.inmemory_faq import InMemoryFAQTool
 from .tools.qdrant_faq import QdrantFAQTool
 
-VERBOSE = os.environ.get("RAG_VERBOSE", "0") == "1"
+
+def _is_verbose() -> bool:
+    return os.environ.get("RAG_VERBOSE", "0") == "1"
 
 
 def _vprint(*args):
-    if VERBOSE:
+    if _is_verbose():
         print(*args)
 
 
-def run_query(query: str) -> str:
+def run_query(
+    query: str, *, recall_rounds: int | None = None, model: str | None = None
+) -> str:
+    """
+    Agentic RAG 四步流程：
+        1) refine 查询
+        2) retrieve 检索（支持多轮召回 recall_rounds）
+        3) draft 初稿生成
+        4) reflect 答案质检
+
+    参数:
+        query : 用户输入的问题
+        recall_rounds : 检索轮数上限（默认从配置读取）
+        model : 临时指定的模型名称（可覆盖配置）
+    """
     cfg = load_config()
+    if model:
+        cfg.llm.model = model
     llm = LLMClient(cfg.llm)
 
-    # 1) refine query
+    # ========== 1) refine query ==========
     refined = llm.chat(
         [
             {
@@ -32,18 +50,37 @@ def run_query(query: str) -> str:
     )
     _vprint("== Refined Query ==\n", refined, "\n")
 
-    # 2) choose tool & retrieve
-    if cfg.rag.use_qdrant:
-        tool = QdrantFAQTool(cfg.rag.qdrant_url, cfg.rag.collection_name)
-        ctx = tool.run(refined)
-        if "回退" in ctx or "失败" in ctx:
-            ctx = InMemoryFAQTool().run(refined)
-    else:
-        tool = InMemoryFAQTool()
-        ctx = tool.run(refined)
-    _vprint("== Retrieved Context ==\n", ctx, "\n")
+    # ========== 2) choose tool & multi-round retrieve ==========
+    if recall_rounds is None:
+        recall_rounds = getattr(cfg.rag, "recall_rounds", 1)
+    if recall_rounds < 1:
+        recall_rounds = 1
 
-    # 3) draft answer
+    if cfg.rag.use_qdrant:
+        base_tool = QdrantFAQTool(cfg.rag.qdrant_url, cfg.rag.collection_name)
+    else:
+        base_tool = InMemoryFAQTool()
+
+    ctx_chunks = []
+    for i in range(recall_rounds):
+        _vprint(f"== Retrieval Round {i+1}/{recall_rounds} ==")
+        ctx_i = base_tool.run(refined)
+        # 如果检索失败或触发回退逻辑，则用内存FAQ兜底
+        if "回退" in ctx_i or "失败" in ctx_i:
+            ctx_i = InMemoryFAQTool().run(refined)
+        _vprint(f"== Retrieved Context (Round {i+1}) ==\n", ctx_i, "\n")
+
+        if ctx_i:
+            ctx_chunks.append(ctx_i)
+        # 可选早停逻辑
+        if any(stop_kw in ctx_i for stop_kw in ["未找到", "检索失败", "空结果"]):
+            _vprint(f"停止于第 {i+1} 轮：检索结果为空或无效。")
+            break
+
+    ctx = "\n---\n".join(ctx_chunks) if ctx_chunks else ""
+    _vprint("== Combined Context ==\n", ctx, "\n")
+
+    # ========== 3) draft answer ==========
     answer = llm.chat(
         [
             {
@@ -58,7 +95,7 @@ def run_query(query: str) -> str:
     )
     _vprint("== Draft Answer ==\n", answer, "\n")
 
-    # 4) reflect with STRICT JSON
+    # ========== 4) reflect with STRICT JSON ==========
     reflect_prompt = [
         {
             "role": "system",

@@ -17,6 +17,7 @@ class RAGConfig(BaseModel):
     qdrant_url: str = "http://localhost:6333"
     collection_name: str = "agentic-rag-demo"
     top_k: int = 3
+    recall_rounds: int = 1  # 召回(检索)轮数上限，用于控制运行时长
 
 
 class AppConfig(BaseModel):
