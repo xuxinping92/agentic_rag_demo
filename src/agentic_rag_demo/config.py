@@ -1,13 +1,14 @@
 from __future__ import annotations
-
 import os
-
 from pydantic import BaseModel, Field
 
 
 class LLMConfig(BaseModel):
-    provider: str = Field(default="auto")  # auto|openai|ollama|dummy
-    model: str = Field(default="gpt-4o-mini")
+    # provider: auto | openai | ollama | dummy
+    provider: str = Field(default="auto")
+    model: str = Field(
+        default="gpt-4o-mini"
+    )  # 可改成你的本地模型，如 "qwen2.5:7b-instruct"
     temperature: float = 0.2
 
 
@@ -25,7 +26,7 @@ class AppConfig(BaseModel):
 
 def load_config() -> AppConfig:
     cfg = AppConfig()
-    # auto detect qdrant
+    # 自动探测 Qdrant
     if os.environ.get("QDRANT_URL"):
         cfg.rag.use_qdrant = True
         cfg.rag.qdrant_url = os.environ["QDRANT_URL"]
