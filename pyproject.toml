@@ -7,7 +7,7 @@ name = "agentic-rag-demo"
 version = "0.1.0"
 description = "A minimal Agentic RAG demo package based on Xu Xinping's notes"
 authors = [
-  {name = "ChatGPT", email = "agentic-rag@example.com"}
+  { name = "ChatGPT", email = "agentic-rag@example.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.9"
@@ -16,10 +16,28 @@ dependencies = [
   "pydantic>=2.7.0",
   "typing-extensions>=4.11.0"
 ]
-optional-dependencies = { 
-  qdrant = ["qdrant-client>=1.11.0", "sentence-transformers>=2.2.2"],
-  langchain = ["langchain>=0.3.0", "langgraph>=0.2.4", "openai>=1.40.0"]
-}
+
+[project.optional-dependencies]
+qdrant = [
+  "qdrant-client>=1.11.0",
+  "sentence-transformers>=2.2.2"
+]
+langchain = [
+  "langchain>=0.3.0",
+  "langgraph>=0.2.4",
+  "openai>=1.40.0"
+]
 
 [project.scripts]
 agentic-rag-demo = "agentic_rag_demo.cli:main"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+skip-string-normalization = false
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+line_length = 88

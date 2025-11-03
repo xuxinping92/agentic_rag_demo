@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from .base import Tool
 
 _FAQ = [
@@ -6,6 +7,7 @@ _FAQ = [
     "传统 RAG 一般是 query -> embed -> vectorDB -> LLM，而 Agentic RAG 可能是 refine -> plan -> retrieve(xN) -> verify -> answer。",
     "Agentic RAG 的关键是把检索当成一个推理过程，而不是一次性召回。",
 ]
+
 
 class InMemoryFAQTool(Tool):
     name = "inmemory_faq"

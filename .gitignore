@@ -1,0 +1,110 @@
+# ----------------------------------------
+# Python build & environment
+# ----------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.myenv*/
+.env/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# mypy / pytype / pyre
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# ----------------------------------------
+# IDE / Editor
+# ----------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------------------
+# Logs / temporary
+# ----------------------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# ----------------------------------------
+# Project specific
+# ----------------------------------------
+# compiled artifacts / cache
+agentic_rag_demo/__pycache__/
+src/agentic_rag_demo/__pycache__/
+src/agentic_rag_demo/tools/__pycache__/
+
+# local test data
+examples/__pycache__/
+examples/*.tmp
+examples/*.bak
+
+# local notebooks / experiments
+notebooks/
+*.ipynb_checkpoints/
+
+# ----------------------------------------
+# PyCharm & VSCode workspace backup
+# ----------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# ----------------------------------------
+# Optional: ignore local configuration
+# ----------------------------------------
+*.env.local
+*.envrc
+.env.json
+config_local.py

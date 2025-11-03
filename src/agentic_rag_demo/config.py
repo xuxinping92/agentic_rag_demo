@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import os
+
 from pydantic import BaseModel, Field
+
 
 class LLMConfig(BaseModel):
     provider: str = Field(default="auto")  # auto|openai|ollama|dummy
     model: str = Field(default="gpt-4o-mini")
     temperature: float = 0.2
+
 
 class RAGConfig(BaseModel):
     use_qdrant: bool = False
@@ -13,9 +17,11 @@ class RAGConfig(BaseModel):
     collection_name: str = "agentic-rag-demo"
     top_k: int = 3
 
+
 class AppConfig(BaseModel):
     llm: LLMConfig = LLMConfig()
     rag: RAGConfig = RAGConfig()
+
 
 def load_config() -> AppConfig:
     cfg = AppConfig()

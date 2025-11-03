@@ -1,8 +1,12 @@
 from __future__ import annotations
-import os
+
 import json
+import os
+
 import requests
+
 from .config import LLMConfig
+
 
 class LLMClient:
     def __init__(self, cfg: LLMConfig) -> None:
@@ -33,7 +37,9 @@ class LLMClient:
 
     def _chat_openai(self, messages: list[dict]) -> str:
         api_key = os.environ["OPENAI_API_KEY"]
-        url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1/chat/completions")
+        url = os.environ.get(
+            "OPENAI_BASE_URL", "https://api.openai.com/v1/chat/completions"
+        )
         model = self.cfg.model or "gpt-4o-mini"
         headers = {
             "Authorization": f"Bearer {api_key}",

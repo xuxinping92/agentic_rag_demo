@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import Optional
+
 from .base import Tool
 
 try:
@@ -8,6 +10,7 @@ try:
 except Exception:  # pragma: no cover
     QdrantClient = None
     SentenceTransformer = None
+
 
 class QdrantFAQTool(Tool):
     name = "qdrant_faq"
@@ -19,7 +22,9 @@ class QdrantFAQTool(Tool):
         self.collection = collection
         if self.available:
             self.client = QdrantClient(url=url)
-            self.embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+            self.embedder = SentenceTransformer(
+                "sentence-transformers/all-MiniLM-L6-v2"
+            )
         else:
             self.client = None
             self.embedder = None
