@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import json
 import os
+
 from .config import load_config
 from .llm_client import LLMClient
 from .tools.inmemory_faq import InMemoryFAQTool
